@@ -7,6 +7,9 @@
 
 2. Librería de precarga: [www.khronos.org](https://www.khronos.org/api/index_2017/gltf)
 
+3. Visualizadopr de blb: [gltf-viewer.donmccurdy.com](https://gltf-viewer.donmccurdy.com/)
+
+      * Ejemplo: assets\plane\microplane.glb
 
 
 # Segmento 2 
