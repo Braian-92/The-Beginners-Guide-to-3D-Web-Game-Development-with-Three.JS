@@ -131,13 +131,23 @@ class Game{
             const action = this.mixer.clipAction( clip );
             action.reset();
 
-            this.actionName = name;
+            if( name == 'shot' ){
+                action.setLoop( THREE.LoopOnce );
+                action.clampWhenFinished = true;
+            }
+
+            
             action.play();
 
             if( this.curAction ){
-                this.curAction.crossFadeTo( action, 0.5 );
+                if( this.actionName == 'shot' ){
+                    this.curAction.enabled = false;
+                }else{
+                    this.curAction.crossFadeTo( action, 0.5 );
+                }
             }
 
+            this.actionName = name;
             this.curAction = action;
         }
 	}
