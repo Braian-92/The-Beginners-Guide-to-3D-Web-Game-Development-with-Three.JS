@@ -12,14 +12,14 @@
       * Ejemplo: assets\plane\microplane.glb
 
 
-# Segmento 2 
+# Paginas assets
 
 lorem:
 
-1. `badge1` mensajes
-1. `badge2` mensajes
-1. `badge3` mensajes
-1. `badge4` mensajes
+1. Sitio de assets: [sketchfab.com](https://sketchfab.com/3d-models/stylized-ww1-plane-c4edeb0e410f46e8a4db320879f0a1db)
+2. Sitio de assets (personajes): [mixamo.com](https://www.mixamo.com/#/)
+3. `badge3` mensajes
+4. `badge4` mensajes
 
 
 # Segmento 3
