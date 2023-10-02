@@ -27,6 +27,7 @@ class Game{
         this.scene.add(this.cameraController);
 
 		const ambient = new THREE.HemisphereLight(0xffffff, 0xbbbbff, 1);
+        ambient.position.set( 0.5, 1, 0.25 );
         this.scene.add(ambient);
 			
 		this.renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true } );
@@ -64,19 +65,49 @@ class Game{
     }
     
 	load(){
-        
+        this.loading = true;
+        this.loadingBar.visible = true;
+
+        this.loadSkybox();
+        this.plane = new Plane( this );
     }
 
     loadSkybox(){
-        
+        this.scene.background = new THREE.CubeTextureLoader()
+        .setPath(`${this.assetsPath}plane/paintedsky/`)
+        .load( [
+            'px.jpg',
+            'nx.jpg',
+            'py.jpg',
+            'ny.jpg',
+            'pz.jpg',
+            'nz.jpg'
+            ], () => {
+                this.renderer.setAnimationLoop(this.render.bind(this));
+            } );
     }		
 
     updateCamera(){
-        
+        this.cameraController.position.copy( this.plane.position );
+        this.cameraController.position.y = 0;
+        this.cameraTarget.copy( this.plane.position );
+        this.cameraTarget.z += 6;
+        this.camera.lookAt( this.cameraTarget );
     }
 
 	render() {
+        if(this.loading){
+            if(this.plane.ready){
+                this.loading = false;
+                this.loadingBar.visible = false;
+            }else{
+                return false;
+            }
+        }
         const time = this.clock.getElapsedTime();
+
+        this.plane.update( time );
+        this.updateCamera();
 
         this.renderer.render( this.scene, this.camera );
 
