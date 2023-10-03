@@ -19,7 +19,7 @@ class SFX {
 
     this.sounds[name] = sound;
 
-    const audioLoader = new AudioLoader.setPath( this.assetsPath );
+    const audioLoader = new AudioLoader().setPath( this.assetsPath );
     audioLoader.load(`${name}.mp3`, buffer => {
       sound.setBuffer( buffer );
       sound.setLoop( loop );
