@@ -125,15 +125,18 @@ class Obstacles {
   }
 
   removeExplosion(explosion) {
-
+    const index = this.explosions.indexOf( explosion );
+    if(index != -1) this.explosions.indexOf( index, 1 );
   }
 
-  reset() {
-    this.obstacleSpawn = {
-      pos: 20,
-      offset: 5
-    };
-    this.obstacles.forEach(obstacle => this.respawnObstacle(obstacle));
+    reset(){
+        this.obstacleSpawn = { pos: 20, offset: 5 };
+        this.obstacles.forEach( obstacle => this.respawnObstacle(obstacle) );
+        let count;
+        while( this.explosions.length>0 && count<100){
+      this.explosions[0].onComplete();
+      count++;
+    }
   }
 
   respawnObstacle(obstacle) {
@@ -148,13 +151,13 @@ class Obstacles {
     });
   }
 
-  update(pos, dt) {
+  update(pos, time) {
     let collisionObstacle;
 
     this.obstacles.forEach(obstacle => {
       obstacle.children[0].rotateY(0.01);
-      const relativePosZ = obstacle.position.z - pos.z;
-      if (Math.abs(relativePosZ) < 2) {
+            const relativePosZ = obstacle.position.z-pos.z;
+            if (Math.abs(relativePosZ)<2 && !obstacle.userData.hit){
         collisionObstacle = obstacle;
       }
       if (relativePosZ < -20) {
@@ -168,16 +171,18 @@ class Obstacles {
       collisionObstacle.children.some(child => {
         child.getWorldPosition(this.tmpPos);
         const dist = this.tmpPos.distanceToSquared(pos);
-        if (dist < minDist) minDist = dist;
-        if (dist < 5 && !collisionObstacle.userData.hit) {
+				if (dist<5){
           collisionObstacle.userData.hit = true;
           console.log(`Closest obstacle is ${minDist.toFixed(2)}`);
           this.hit(child);
           return true;
         }
-      })
-
+      });
     }
+
+    this.explosions.forEach( explosion => {
+      explosion.update( time );
+    });
   }
 
   hit(obj) {
