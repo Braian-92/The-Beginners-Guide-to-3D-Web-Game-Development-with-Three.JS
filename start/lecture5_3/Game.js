@@ -58,11 +58,22 @@ class Game{
 	}
 	
     startGame(){
+        const gameover = document.getElementById('gameover');
         const instructions = document.getElementById('instructions');
         const btn = document.getElementById('playBtn');
 
+        gameover.style.display = 'none';
         instructions.style.display = 'none';
         btn.style.display = 'none';
+
+        this.score = 0;
+        this.lives = 3;
+
+        let elm = document.getElementById('score');
+        elm.innerHTML = this.lives;
+
+        this.plane.reset();
+        this.obstacles.reset();
 
         this.active = true;
     }
@@ -121,6 +132,7 @@ class Game{
         this.loadingBar.visible = true;
 
         this.plane = new Plane(this);
+        this.obstacles = new Obstacles(this);
     }
 
     loadSkybox(){
@@ -139,15 +151,29 @@ class Game{
     }
     
     gameOver(){
-        
+        this.active = false;
+
+        const gameOver = document.getElementById('gameover');
+        const btn = document.getElementById('playBtn');
+
+        gameover.style.display = 'block';
+        btn.style.display = 'block';
     }
 
     incScore(){
-        
+        this.score++;
+
+        const elm = document.getElementById('score');
+        elm.innerHTML = this.score;
     }
 
     decLives(){
-       
+       this.lives--;
+
+       const elm = document.getElementById('lives');
+       elm.innerHTML = this.lives;
+
+       if(this.lives == 0) this.gameOver();
     }
 
     updateCamera(){
@@ -160,7 +186,7 @@ class Game{
 
 	render() {
         if (this.loading){
-            if (this.plane.ready){
+            if (this.plane.ready && this.obstacles.ready){
                 this.loading = false;
                 this.loadingBar.visible = false;
             }else{
@@ -170,6 +196,7 @@ class Game{
 
         const time = this.clock.getElapsedTime();
 
+        if(this.active) this.obstacles.update(this.plane.position);
         this.plane.update(time);
     
         this.updateCamera();
