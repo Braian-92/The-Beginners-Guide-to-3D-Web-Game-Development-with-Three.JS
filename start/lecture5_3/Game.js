@@ -70,6 +70,9 @@ class Game{
         this.lives = 3;
 
         let elm = document.getElementById('score');
+        elm.innerHTML = this.score;
+        
+        elm = document.getElementById('lives');
         elm.innerHTML = this.lives;
 
         this.plane.reset();
@@ -153,7 +156,7 @@ class Game{
     gameOver(){
         this.active = false;
 
-        const gameOver = document.getElementById('gameover');
+        const gameover = document.getElementById('gameover');
         const btn = document.getElementById('playBtn');
 
         gameover.style.display = 'block';
