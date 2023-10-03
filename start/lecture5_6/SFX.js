@@ -1,37 +1,44 @@
-import { AudioListener, Audio, PositionalAudio, AudioLoader } from '../../libs/three137/three.module.js';
+import {
+  AudioListener,
+  Audio,
+  PositionalAudio,
+  AudioLoader
+} from '../../libs/three137/three.module.js';
 
-class SFX{
-    constructor(camera, assetsPath){
-        
-    }
+class SFX {
+  constructor(camera, assetsPath) {
 
-    load(name, loop=false, vol=0.5, obj=null){
-        
-    }
+  }
 
-    setVolume(name, volume){
-        
-    }
+  load(name, loop = false, vol = 0.5, obj = null) {
 
-    setLoop(name, loop){
-        
-    }
+  }
 
-    play(name){
-        
-    }
+  setVolume(name, volume) {
 
-    stop(name){
-        
-    }
+  }
 
-    stopAll(){
-        
-    }
+  setLoop(name, loop) {
 
-    pause(name){
-        
-    }
+  }
+
+  play(name) {
+
+  }
+
+  stop(name) {
+
+  }
+
+  stopAll() {
+
+  }
+
+  pause(name) {
+
+  }
 }
 
-export { SFX };
+export {
+  SFX
+};
