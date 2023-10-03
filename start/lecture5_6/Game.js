@@ -81,6 +81,7 @@ class Game {
     btn.style.display = 'none';
 
     this.score = 0;
+    this.bonusScore = 0;
     this.lives = 3;
 
     let elm = document.getElementById('score');
@@ -163,6 +164,7 @@ class Game {
     this.sfx.load('engine', true, 1);
     this.sfx.load('gliss');
     this.sfx.load('gameover');
+    this.sfx.load('bonus');
   }
 
   loadSkybox() {
@@ -200,9 +202,14 @@ class Game {
 
     const elm = document.getElementById('score');
 
-    elm.innerHTML = this.score;
+    if( this.score % 3 == 0 ){
+      this.bonusScore += 3;
+      this.sfx.play('bonus');
+    }else{
+      this.sfx.play('gliss')
+    }
 
-    this.sfx.play('gliss')
+    elm.innerHTML = this.score + this.bonusScore;
   }
 
   decLives() {
