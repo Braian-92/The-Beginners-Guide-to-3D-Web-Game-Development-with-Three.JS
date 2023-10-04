@@ -112,9 +112,7 @@ class Game {
 
   }
 
-	starRendering() {
-		this.renderer.setAnimationLoop( this.render.bind( this ) );
-	}
+	
 
   loadEnvironment() {
     const loader = new GLTFLoader().setPath(`${this.assetsPath}factory/`);
@@ -145,7 +143,7 @@ class Game {
 							this.navmesh.geometry.rotateX( Math.PI/2 );
 							this.navmesh.quaternion.identity();
 							this.navmesh.position.set(0, 0, 0);
-							child.material.trasparent = true;
+							child.material.transparent = true;
 							child.material.opacity = 0.5;
 						} else if (child.name.includes('fan')) {
               this.fans.push(child);
@@ -202,6 +200,10 @@ class Game {
       }
     );
   }
+
+  startRendering() {
+		this.renderer.setAnimationLoop( this.render.bind( this ) );
+	}
 
   render() {
     const dt = this.clock.getDelta();
