@@ -18,7 +18,23 @@ import {
 
 class User {
   constructor(game, pos, heading) {
+		this.root = new Group();
+		this.root.position.copy( pos );
+		this.root.rotation.set( 0, heading, 0, 'XYZ' );
 
+		this.game = game;
+
+		this.camera = game.camera;
+		this.raycaster = new Raycaster();
+
+		game.scene.add( this.root );
+
+		this.loadingBar = game.loadingBar;
+
+        this.load();
+
+		this.initMouseHandler();
+		this.initRifleDirection();
   }
 
   initMouseHandler() {
@@ -86,6 +102,28 @@ class User {
       'eve.glb',
       // called when the resource is loaded
       gltf => {
+				this.root.add( gltf.scene );
+				this.object = gltf.scene;
+
+				const scale = 1.2;
+				this.object.scale.set( scale, scale, scale );
+
+				this.object.traverse( child => {
+					if ( child.isMesh ){
+						child.castShadow = true;
+						if ( child.name.includes('Rifle') ) this.rifle = child;
+					}
+				});
+
+				this.animations = {};
+
+				gltf.animations.forEach( animation => {
+					this.animations[animation.name.toLowerCase()] = animation;
+				});
+
+				this.mixer = new AnimationMixer( gltf.scene );
+
+				this.action = 'idle';
 
       },
       // called while loading is progressing
@@ -105,6 +143,13 @@ class User {
     const clip = this.animations[name.toLowerCase()];
 
     if (clip !== undefined) {
+			if( this.rifle && this.rifleDirection ){
+				const q = this.rifleDirection[name.toLowerCase()];
+				if( q !== undefined ){
+					this.rifle.quaternion.copy( q );
+					this.rifle.rotateX( 1.57 );
+				}
+			}
       const action = this.mixer.clipAction(clip);
       if (name == 'shot') {
         action.clampWhenFinished = true;
