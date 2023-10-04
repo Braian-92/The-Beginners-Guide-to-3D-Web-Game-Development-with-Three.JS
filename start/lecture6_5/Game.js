@@ -73,7 +73,9 @@ class Game {
   }
 
   initPathfinding(navmesh) {
-
+		this.pathfinder = new Pathfinding();
+		this.pathfinder.setZoneData( 'factory', Pathfinding.createZone( navmesh.geometry, 0.02 ) );
+		if ( this.npcHandler.gltf !== undefined ) this.npcHandler.initNPCs();
   }
 
   resize() {
@@ -106,7 +108,13 @@ class Game {
 
   load() {
     this.loadEnvironment();
+		this.npcHandler = new NPCHandler( this );
+
   }
+
+	starRendering() {
+		this.renderer.setAnimationLoop( this.render.bind( this ) );
+	}
 
   loadEnvironment() {
     const loader = new GLTFLoader().setPath(`${this.assetsPath}factory/`);
@@ -132,7 +140,14 @@ class Game {
 
         gltf.scene.traverse(child => {
           if (child.isMesh) {
-            if (child.name.includes('fan')) {
+            if (child.name == 'NavMesh') {
+							this.navmesh = child;
+							this.navmesh.geometry.rotateX( Math.PI/2 );
+							this.navmesh.quaternion.identity();
+							this.navmesh.position.set(0, 0, 0);
+							child.material.trasparent = true;
+							child.material.opacity = 0.5;
+						} else if (child.name.includes('fan')) {
               this.fans.push(child);
             } else if (child.material.name.includes('elements2')) {
               mergeObjects.elements2.push(child);
@@ -153,6 +168,9 @@ class Game {
             }
           }
         });
+
+				this.scene.add( this.navmesh );
+				this.initPathfinding( this.navmesh );
 
         for (let prop in mergeObjects) {
           const array = mergeObjects[prop];
@@ -193,7 +211,7 @@ class Game {
         fan.rotateY(dt);
       });
     }
-
+		if ( this.npcHandler !== undefined ) this.npcHandler.update( dt );
     this.renderer.render(this.scene, this.camera);
 
   }
