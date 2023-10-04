@@ -110,6 +110,7 @@ class NPCHandler {
 
 
 			const npc = new NPC( options );
+			npc.action = 'idle';
 
 			npc.object.position.set( -7.607, 0.017, -7.713 );
 
