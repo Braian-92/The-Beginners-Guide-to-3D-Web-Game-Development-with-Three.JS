@@ -116,7 +116,7 @@ class Controller {
     
     const self = this;
 
-    function gamepadConnect( event, connecting ){
+    function gamepadHandler( event, connecting ){
       const gamepad = event.gamepad;
 
       if ( connecting ){
@@ -271,7 +271,7 @@ class Controller {
       pos.y += 2;
       //console.log(`Moving>> target rotation:${this.target.rotation} forward:${forward} pos:${pos}`);
 
-      this.raycaster.set(pos, this.down);
+      this.raycaster.set( pos, this.down );
 
       const intersects = this.raycaster.intersectObject(this.navmesh);
 
