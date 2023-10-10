@@ -41,6 +41,9 @@ class User {
 
     this.ready = false;
 
+		this.speed = 0;
+		this.isFiring =  false;
+
     //this.initMouseHandler();
     this.initRifleDirection();
   }
@@ -100,6 +103,16 @@ class User {
     return this.root.position;
   }
 
+	set firing(mode) {
+		this.isFiring = mode;
+		if ( mode ){
+			this.action = ( Math.abs( this.speed ) == 0 ) ? 'firing' : 'firingwalk';
+			this.bulletTime = this.game.clock.getElapsedTime();
+		}else{
+			this.action = 'idle';
+		}
+	}
+
   addSphere() {
     const geometry = new SphereGeometry(0.1, 8, 8);
     const material = new MeshBasicMaterial({
@@ -136,6 +149,22 @@ class User {
             if (child.name.includes('Rifle')) this.rifle = child;
           }
         });
+
+				if ( this.rifle ){
+					const geometry = new BufferGeometry().setFromPoints([
+						new Vector3( 0, 0, 0 ),
+						new Vector3( 1, 0, 0 )
+					]);
+
+					const line = new Line( geometry );
+					line.name = 'aim';
+					line.scale.x = 50;
+					line.position.set( 0, 0, 0.5 );
+					this.aim = line;
+					line.visible = false;
+
+					this.rifle.add( line );
+				}
 
         this.animations = {};
 
@@ -207,8 +236,20 @@ class User {
     }
   }
 
+	shoot() {
+		if ( this.bulletHandler === undefined ) this.bulletHandler = this.game.bulletHandler;
+		this.aim.getWorldPosition( this.tmpVec );
+		this.aim.getWorldQuaternion( this.tmpQuat );
+		this.bulletHandler.createBullet( this.tmpVec, this.tmpQuat );
+		this.bulletTime = this.game.clock.getElapsedTime();
+	}
+
   update(dt) {
     if (this.mixer) this.mixer.update(dt);
+		if ( this.isFiring ){
+			const elapsedTime = this.game.clock.getElapsedTime() - this.bulletTime;
+			if ( elapsedTime > 0.6 ) this.shoot();
+		}
     if (this.rotateRifle !== undefined) {
       this.rotateRifle.time += dt;
       if (this.rotateRifle.time > 0.5) {
