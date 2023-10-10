@@ -102,7 +102,7 @@ class User{
         // Load a glTF resource
 		loader.load(
 			// resource URL
-			'eve.glb',
+			'eve2.glb',
 			// called when the resource is loaded
 			gltf => {
 				this.root.add( gltf.scene );
@@ -115,6 +115,7 @@ class User{
                 this.object.traverse( child => {
                     if ( child.isMesh){
                         child.castShadow = true;
+						if (child.name.includes('Rifle')) this.rifle = child;
                     }
                 });
 
