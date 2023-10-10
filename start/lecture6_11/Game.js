@@ -81,7 +81,17 @@ class Game {
   }
 
   seeUser(pos, seethrough = false) {
+		this.tmpVec.copy( this.user.position ).sub( pos ).normalize();
+		this.raycaster.set( pos, this.tmpVec );
+		const intersects = this.raycaster.intersectObject( this.factory.children, true );
 
+		let userVisible = true;
+
+		if( intersects.length > 0 ){
+			const dist = this.tempVec.copy( this, user.position ).distanceTo( pos );
+			userVisible = ( intersects[0].distance > dist );
+			return userVisible;
+		}
   }
 
   initPathfinding(navmesh) {
