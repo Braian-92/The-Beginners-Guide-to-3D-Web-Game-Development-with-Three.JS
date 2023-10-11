@@ -4,7 +4,7 @@ import * as CANNON from '../../libs/cannon-es.js';
 
 class Ball {
   static RADIUS = 0.05715 / 2;
-  static MASS = 0.17;
+  static MASS = 0.17; //! 0.17Kg * 1000 = 170g
   static MATERIAL = new CANNON.Material("ballMaterial");
 
   constructor(game, x, z, id = 0) {
@@ -30,11 +30,35 @@ class Ball {
   }
 
   hit(strength = 0.6) {
+    this.rigidBody.wakeUp();
 
+    const theta = this.game.controls.getAzimuthalAngle();
+    this.tmpQuat.setFromAxisAngle(this.up, theta);
+
+    const forward = this.forward.clone().applyQuaternion(this.tmpQuat);
+
+    const force = new CANNON.Vec3();
+    force.copy(forward);
+      force.scale(strength, force);
+      
+      this.rigidBody.applyImpulse(force, new CANNON.Vec3());
   }
 
   createBody(x, y, z) {
+    const body = new CANNON.Body({
+        mass: Ball.MASS,
+        position: new CANNON.Vec3(x,y,z),
+        shape: new CANNON.Sphere(Ball.RADIUS),
+        material: Ball.CONTACT_MATERIAL
+    });
+    
+      body.linearDamping = body.angularDamping = 0.5; // Hardcode
+    body.allowSleep = true;
 
+    body.sleepSpeedLimit = 2;
+    body.sleepTimeLimit = 0.1;
+
+    return body;
   }
 }
 
