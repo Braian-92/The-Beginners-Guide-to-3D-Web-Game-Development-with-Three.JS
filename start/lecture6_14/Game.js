@@ -27,9 +27,6 @@ import {
   UI
 } from './UI.js';
 import {
-  SFX
-} from '../../libs/SFX.js';
-import {
   EffectComposer
 } from '../../libs/three137/pp/EffectComposer.js';
 import {
@@ -44,6 +41,9 @@ import {
 import {
   Tween
 } from '../../libs/Toon3D.js';
+import {
+  SFX
+} from '../../libs/SFX.js';
 
 class Game {
   constructor() {
@@ -110,11 +110,54 @@ class Game {
   }
 
   initPostProcessing() {
+    this.composer = new EffectComposer(this.renderer);
+    const renderPass = new RenderPass(this.scene, this.camera);
+    this.composer.addPass(renderPass);
+    const gammaCorrectionPass = new ShaderPass(GammaCorrectionShader);
+    this.composer.addPass(gammaCorrectionPass);
 
+    const tintShader = {
+
+      uniforms: {
+
+        'tDiffuse': {
+          value: null
+        },
+        'strength': {
+          value: 0.0
+        }
+
+      },
+
+      vertexShader: /* glsl */ `
+				varying vec2 vUv;
+				void main() {
+					vUv = uv;
+					gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+				}`,
+
+      fragmentShader: /* glsl */ `
+				uniform float strength;
+				uniform sampler2D tDiffuse;
+				varying vec2 vUv;
+				void main() {
+					vec3 texel = texture2D(tDiffuse, vUv).rgb;
+					vec3 tintColor = vec3(1.0, 0.3, 0.3);
+					float luminance = (texel.r + texel.g + texel.b)/3.0;
+					vec3 tint = tintColor * luminance * 1.8;
+					vec3 color = mix(texel, tint, clamp(strength, 0.0, 1.0));
+					gl_FragColor = vec4(color, 1.0);
+				}`
+
+    };
+    this.tintPass = new ShaderPass(tintShader);
+    this.composer.addPass(this.tintPass);
   }
 
   tintScreen(action) {
-
+    this.tintPass.uniforms.strength.value = 1;
+    const duration = (action == 'shot') ? 3.0 : 1.5;
+    this.tween = new Tween(this.tintPass.uniforms.strength, 'value', 0, duration, this.removeTween.bind(this));
   }
 
   removeTween() {
@@ -359,10 +402,4 @@ class Game {
 
 export {
   Game
-}; // This is just a sample script. Paste your real code (javascript or HTML) here.
-
-if ('this_is' == /an_example/) {
-  of_beautifier();
-} else {
-  var a = b ? (c % d) : e[f];
-}
+};
