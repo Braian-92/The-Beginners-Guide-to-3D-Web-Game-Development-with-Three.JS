@@ -57,7 +57,12 @@ class Game {
   }
 
   initWorld() {
+    const world = new CANNON.World();
+    world.gravity.set( 0, -10, 0 );
 
+    this.helper = new CannonHelper( this.scene, world );
+
+    this.world = world;
   }
 
   random(min, max) {
@@ -66,7 +71,34 @@ class Game {
   }
 
   initScene() {
+    const groundBody = new CANNON.Body( { mass : 0 } );
+    const groundShape = new CANNON.Plane();
+    groundBody.addShape( groundShape );
+    groundBody.quaternion.setFromEuler( -Math.PI/2, 0, 0 );
+    this.world.addBody( groundBody );
+    this.helper.addVisual( groundBody );
+    
+    const size = 0.4;
+    const bodies = [];
 
+    setInterval(() => {
+        const sphereBody = new CANNON.Body({
+          mass : 1,
+          position : new CANNON.Vec3( this.random( -0.1, 0.1 ), 4, this.random( -0.1, 0.1 ) )
+        });
+
+        const sphereShape = new CANNON.Sphere( size );
+        sphereBody.addShape( sphereShape );
+        this.world.addBody( sphereBody );
+        this.helper.addVisual( sphereBody, 0xFF0000 );
+        bodies.push( sphereBody );
+
+        if ( bodies.length > 80 ){
+          const bodyToKill = bodies.shift();
+          this.helper.removeVisual( bodyToKill );
+          this.world.removeBody( bodyToKill );
+        }
+    }, 300);
   }
 
   resize() {
@@ -76,6 +108,8 @@ class Game {
   }
 
   render() {
+    this.world.step(0.0167); //! => 1/60
+    this.helper.update();
     this.renderer.render(this.scene, this.camera);
   }
 }
