@@ -241,11 +241,47 @@ class Table {
   }
 
   createFelt() {
+    const narrowStripWidth = 0.02;
+    const narrowStripLength = Table.WIDTH/2 - 0.05;
+    const floorThickness = 0.01;
+    const mainAreaX = Table.LENGTH/2 - 2 * narrowStripWidth;
+
+    const floorBox = new CANNON.Box( 
+      new CANNON.Vec3(mainAreaX, floorThickness, Table.WIDTH/2)
+    );
+
+    const floorBoxSmall = new CANNON.Box( 
+      new CANNON.Vec3(narrowStripWidth, floorThickness, narrowStripLength)
+    );
+
+    const body = new CANNON.Body({
+      mass     : 0,
+      material : Table.FLOOR_MATERIAL
+    });
+
+    body.addShape(floorBox, new CANNON.Vec3(0, -floorThickness, 0));
+    body.addShape(floorBoxSmall, new CANNON.Vec3(-mainAreaX, narrowStripWidth, 0));
+    body.addShape(floorBoxSmall, new CANNON.Vec3(mainAreaX + narrowStripWidth, -floorThickness, 0));
 
   }
 
   createHoles() {
+    const corner = {
+      x: Table.LENGTH/2 + 0.015,
+      z: Table.WIDTH/2 + 0.015,
+      PIby4: Math.PI / 4
+    };
 
+    const middleZ = Table.WIDTH/2 + 0.048;
+
+    const holes = [
+      new Hole(corner.x, 0, -corner.z, corner.PIby4),
+      new Hole(-corner.x, 0, -corner.z, -corner.PIby4),
+      new Hole(corner.x, 0, corner.z, 3 * corner.PIby4),
+      new Hole(-corner.x, 0, corner.z, -3 * corner.PIby4),
+      new Hole(0, 0, -middleZ, 0),
+      new Hole(0, 0, middleZ, Math.PI),
+    ];
   }
 
   createWalls() {
