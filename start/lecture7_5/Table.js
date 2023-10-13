@@ -243,7 +243,7 @@ class Table{
       
         const body = new CANNON.Body({
           mass: 0, // mass == 0 makes the body static
-          material: Table.floorContactMaterial
+          material: Table.FLOOR_MATERIAL
         });
 
         body.addShape(floorBox,      new CANNON.Vec3(0, -floorThickness, 0));
