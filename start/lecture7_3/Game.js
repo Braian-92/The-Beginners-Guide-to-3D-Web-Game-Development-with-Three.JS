@@ -138,10 +138,6 @@ import { OrbitControls } from '../../libs/three137/OrbitControls.js';
   }
 
   render( ) {   
-    if (this.cueball){
-      this.controls.target.copy( this.cueball.mesh.position );
-      this.controls.update();
-    }
     this.world.step(this.world.fixedTimeStep);
     this.helper.update();
     this.renderer.render( this.scene, this.camera );
